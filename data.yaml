@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 4
+names: ['blue', 'large_orange_cone', 'orange', 'yellow']
+
+roboflow:
+  workspace: diogo-alpendre-jjhgx
+  project: formulastudent
+  version: 18
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/diogo-alpendre-jjhgx/formulastudent/dataset/18
