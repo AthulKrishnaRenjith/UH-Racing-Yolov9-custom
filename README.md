@@ -81,7 +81,7 @@ To train the Yolov9 custom model, follow the steps below:
 	python3 -u train.py \
     	--batch <batch_size> --epochs <num_epochs> --img <image_size> --device <device_id> \
     	--min-items <min_items> --close-mosaic <close_mosaic_epoch> \
-	--data <data_config> \
+    	--data <data_config> \
     	--weights <pretrained_weights> \
     	--cfg <model_config> \
     	--hyp <hyperparameter_config>
@@ -97,13 +97,13 @@ To train the Yolov9 custom model, follow the steps below:
 ## Evaluation
 
 To evaluate the trained Yolov9 custom model, use the evaluation script:
-    ```bash
-	python3 val.py \
-    	--task <task_type> \
-    	--data <data_config> \
-    	--batch <batch_size> \
-    	--weights <model_weights>
-    ```
+	```bash
+	   python3 val.py \
+	   --task <task_type> \
+	   --data <data_config> \
+	   --batch <batch_size> \
+	   --weights <model_weights>
+	```
 The evaluation metrics will be displayed, and the results will be saved for further analysis.
 
 ## Deployment on Jetson Nano
@@ -111,11 +111,9 @@ The evaluation metrics will be displayed, and the results will be saved for furt
 To deploy the trained model on Jetson Nano with TensorRT optimization:
 
 Convert the trained model to TensorRT format:
-
-    ```bash
-    python3 export.py --weights runs/train/<experiment>/weights/best.pt --include engine --device 0 --half --simplify
-    ```
-
+	```bash
+	   python3 export.py --weights runs/train/<experiment>/weights/best.pt --include engine --device 0 --half --simplify
+	```
 ## Performance & Benchmarks
 
 | Model | Hardware | mAP (%) | FPS |
