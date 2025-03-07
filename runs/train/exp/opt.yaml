@@ -1,6 +1,6 @@
 weights: '{HOME}/weights/gelan-c.pt'
 cfg: models/detect/gelan-c.yaml
-data: custom/data.yaml
+data: data.yaml
 hyp:
   lr0: 0.01
   lrf: 0.01
@@ -69,4 +69,4 @@ entity: null
 upload_dataset: false
 bbox_interval: -1
 artifact_alias: latest
-save_dir: runs/train/exp
+save_dir: runs/train/exp5
