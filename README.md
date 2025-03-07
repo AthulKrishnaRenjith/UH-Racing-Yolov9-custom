@@ -1,6 +1,6 @@
 # UH Racing Yolov9 Custom
 
-This repository contains the custom implementation of the Yolov9 model for the UH Racing team. The project focuses on utilizing the Yolov9 model for object detection tasks specific to the requirements of the UH Racing team.
+This repository contains the custom implementation of the Yolov9 model for the UH Racing team. The project focuses on utilizing the Yolov9 model for object detection tasks specific to the requirements of racing.
 
 ## Table of Contents
 
