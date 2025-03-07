@@ -97,13 +97,13 @@ To train the Yolov9 custom model, follow the steps below:
 ## Evaluation
 
 To evaluate the trained Yolov9 custom model, use the evaluation script:
-	```bash
+   ```bash
 	   python3 val.py \
 	   --task <task_type> \
 	   --data <data_config> \
 	   --batch <batch_size> \
 	   --weights <model_weights>
-	```
+   ```
 The evaluation metrics will be displayed, and the results will be saved for further analysis.
 
 ## Deployment on Jetson Nano
@@ -111,9 +111,9 @@ The evaluation metrics will be displayed, and the results will be saved for furt
 To deploy the trained model on Jetson Nano with TensorRT optimization:
 
 Convert the trained model to TensorRT format:
-	```bash
+   ```bash
 	   python3 export.py --weights runs/train/<experiment>/weights/best.pt --include engine --device 0 --half --simplify
-	```
+   ```
 ## Performance & Benchmarks
 
 | Model | Hardware | mAP (%) | FPS |
