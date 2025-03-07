@@ -60,7 +60,7 @@ To use the pretrained Yolov9 custom model for object detection, follow the steps
 
 ## Dataset
 
-The dataset used for training the Yolov9 custom model comprises images and annotations specific to the UH Racing domain. Ensure that the dataset is properly formatted and stored in the `data/` directory.
+The dataset used for training the Yolov9 custom model comprises images and annotations specific to the Racing domain.
 
 ### Dataset Details
 - Sources: Formula Student dataset (Roboflow)
@@ -68,6 +68,8 @@ The dataset used for training the Yolov9 custom model comprises images and annot
 - Preprocessing: Auto-orientation of pixel data (with EXIF-orientation stripping), Resize to 1920x1080 (Stretch)
 
 Acknowledgement: The dataset used in this project is derived from the Formula Student dataset, which has been invaluable in training my object detection models.
+
+![Dataset](/runs/train/exp1/labels.jpg)
 
 ## Training
 
@@ -79,7 +81,7 @@ To train the Yolov9 custom model, follow the steps below:
 	python3 -u train.py \
     	--batch <batch_size> --epochs <num_epochs> --img <image_size> --device <device_id> \
     	--min-items <min_items> --close-mosaic <close_mosaic_epoch> \
-   	--data <data_config> \
+	--data <data_config> \
     	--weights <pretrained_weights> \
     	--cfg <model_config> \
     	--hyp <hyperparameter_config>
@@ -95,7 +97,6 @@ To train the Yolov9 custom model, follow the steps below:
 ## Evaluation
 
 To evaluate the trained Yolov9 custom model, use the evaluation script:
-
     ```bash
 	python3 val.py \
     	--task <task_type> \
@@ -103,7 +104,6 @@ To evaluate the trained Yolov9 custom model, use the evaluation script:
     	--batch <batch_size> \
     	--weights <model_weights>
     ```
-
 The evaluation metrics will be displayed, and the results will be saved for further analysis.
 
 ## Deployment on Jetson Nano
