@@ -120,7 +120,7 @@ Convert the trained model to TensorRT format:
 |--------|------------|---------|-----|
 | YOLOv9 (PyTorch)  | NVIDIA A100        | 85.4 | 75 |
 | YOLOv9 (ONNX)     | Jetson Nano (FP16) | 76.2 | (Untested) |
-| YOLOv9 (TensorRT) | Jetson Nano (FP16) | 74.8 | (Untested) |
+| YOLOv9 (TensorRT) | Jetson Nano (FP16) | 74.8 | 20 |
 
 ## Model Metrics
 
