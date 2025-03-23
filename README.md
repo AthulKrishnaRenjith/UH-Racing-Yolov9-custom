@@ -135,7 +135,7 @@ Convert the trained model to TensorRT format:
 
 After training for 80 epochs, the model achieved the following performance:
 
-![Metrics](/runs/train/exp1/results.png)
+![Metrics](runs/train/exp1/results.png)
 
 ## ROS Integration
 
