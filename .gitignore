@@ -2,6 +2,7 @@ best.pt
 last.pt
 weights/
 ADS_DV_CAM_without_obstacles/
-train/
+/train
 valid/
 test/
+!runs/train
