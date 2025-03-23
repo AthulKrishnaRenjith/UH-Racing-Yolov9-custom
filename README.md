@@ -10,7 +10,7 @@ This repository contains the custom implementation of the Yolov9 model for the U
 - [Dataset](#dataset)
 - [Training](#training)
 - [Evaluation](#evaluation)
-- [Deployment on Jetson Nano](#deployment-on-jetson-nano)
+- [Deployment on Jetson AGX Orin](#deployment-on-jetson-agx-orin)
 - [Performance & Benchmarks](#performance--benchmarks)
 - [Model Metrics](#model-metrics)
 
@@ -25,8 +25,8 @@ To get started with this project, follow the steps below to set up the environme
 ### Prerequisites
 - Python 3.8+
 - PyTorch with CUDA support (if using GPU)
-- NVIDIA Jetson Nano (optional, for deployment)
-- TensorRT (for optimized inference on Jetson Nano)
+- NVIDIA Jetson AGX Orin (optional, for deployment)
+- TensorRT (for optimized inference on Jetson AGX Orin)
 
 ### Setup Instructions
 
@@ -60,7 +60,15 @@ To use the pretrained Yolov9 custom model for object detection, follow the steps
 
 ## Dataset
 
-The dataset used for training the Yolov9 custom model comprises images and annotations specific to the Racing domain.
+The dataset was not added to this repository due to space limitations. However, you can download the dataset I used by running:
+
+```bash
+curl -L "https://universe.roboflow.com/ds/nKANbGfxTm?key=4WbqXnvH4Q" > roboflow.zip
+unzip roboflow.zip
+rm roboflow.zip
+```
+
+After downloading, move the `train`, `test`, and `valid` directories from inside the `dataset` directory into the main project directory. This ensures the training script can locate the dataset correctly and prevents any path-related issues.
 
 ### Dataset Details
 - Sources: Formula Student dataset (Roboflow)
@@ -69,8 +77,6 @@ The dataset used for training the Yolov9 custom model comprises images and annot
 
 Acknowledgement: The dataset used in this project is derived from the Formula Student dataset, which has been invaluable in training my object detection models.
 
-![Dataset](/runs/train/exp1/labels.jpg)
-
 ## Training
 
 To train the Yolov9 custom model, follow the steps below:
@@ -78,13 +84,13 @@ To train the Yolov9 custom model, follow the steps below:
 1. Prepare the dataset and update the configuration files as needed.
 2. Run the training script:
     ```bash
-	python3 -u train.py \
-    	--batch <batch_size> --epochs <num_epochs> --img <image_size> --device <device_id> \
-    	--min-items <min_items> --close-mosaic <close_mosaic_epoch> \
-    	--data <data_config> \
-    	--weights <pretrained_weights> \
-    	--cfg <model_config> \
-    	--hyp <hyperparameter_config>
+    python3 -u train.py \
+        --batch <batch_size> --epochs <num_epochs> --img <image_size> --device <device_id> \
+        --min-items <min_items> --close-mosaic <close_mosaic_epoch> \
+        --data <data_config> \
+        --weights <pretrained_weights> \
+        --cfg <model_config> \
+        --hyp <hyperparameter_config>
     ```
 3. Monitor the training process and evaluate the model's performance.
 
@@ -98,35 +104,35 @@ To train the Yolov9 custom model, follow the steps below:
 
 To evaluate the trained Yolov9 custom model, use the evaluation script:
    ```bash
-	   python3 val.py \
-	   --task <task_type> \
-	   --data <data_config> \
-	   --batch <batch_size> \
-	   --weights <model_weights>
+   python3 val.py \
+       --task <task_type> \
+       --data <data_config> \
+       --batch <batch_size> \
+       --weights <model_weights>
    ```
 The evaluation metrics will be displayed, and the results will be saved for further analysis.
 
-## Deployment on Jetson Nano
+## Deployment on Jetson AGX Orin
 
-To deploy the trained model on Jetson Nano with TensorRT optimization:
+To deploy the trained model on Jetson AGX Orin with TensorRT optimization:
 
 Convert the trained model to TensorRT format:
    ```bash
-	   python3 export.py --weights runs/train/<experiment>/weights/best.pt --include engine --device 0 --half --simplify
+   python3 export.py --weights runs/train/<experiment>/weights/best.pt --include engine --device 0 --half --simplify
    ```
+
 ## Performance & Benchmarks
 
 | Model | Hardware | mAP (%) | FPS |
 |--------|------------|---------|-----|
 | YOLOv9 (PyTorch)  | NVIDIA A100        | 85.4 | 75 |
-| YOLOv9 (ONNX)     | Jetson Nano (FP16) | 76.2 | (Untested) |
-| YOLOv9 (TensorRT) | Jetson Nano (FP16) | 74.8 | 20 |
+| YOLOv9 (ONNX)     | Jetson AGX Orin (FP16) | 76.2 | (Untested) |
+| YOLOv9 (TensorRT) | Jetson AGX Orin (FP16) | 74.8 | 20 |
 
 ## Model Metrics
 
 After training for 80 epochs, the model achieved the following performance:
 
 ![Metrics](/runs/train/exp1/results.png)
-
 
 
