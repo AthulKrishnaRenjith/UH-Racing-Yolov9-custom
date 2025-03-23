@@ -1,153 +1,132 @@
-# YOLOv9
+# UH Racing Yolov9 Custom
 
-Implementation of paper - [YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information](https://arxiv.org/abs/2402.13616)
+This repository contains the custom implementation of the Yolov9 model for the UH Racing team. The project focuses on utilizing the Yolov9 model for object detection tasks specific to the requirements of racing.
 
-<div align="center">
-    <a href="./">
-        <img src="./figure/performance.png" width="79%"/>
-    </a>
-</div>
+## Table of Contents
 
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Dataset](#dataset)
+- [Training](#training)
+- [Evaluation](#evaluation)
+- [Deployment on Jetson Nano](#deployment-on-jetson-nano)
+- [Performance & Benchmarks](#performance--benchmarks)
+- [Model Metrics](#model-metrics)
 
-## Performance 
+## Introduction
 
-MS COCO
-
-| Model | Test Size | AP<sup>val</sup> | AP<sub>50</sub><sup>val</sup> | AP<sub>75</sub><sup>val</sup> | Param. | FLOPs |
-| :-- | :-: | :-: | :-: | :-: | :-: | :-: |
-| [**YOLOv9-S**]() | 640 | **46.8%** | **63.4%** | **50.7%** | **7.2M** | **26.7G** |
-| [**YOLOv9-M**]() | 640 | **51.4%** | **68.1%** | **56.1%** | **20.1M** | **76.8G** |
-| [**YOLOv9-C**](https://github.com/WongKinYiu/yolov9/releases/download/v0.1/yolov9-c.pt) | 640 | **53.0%** | **70.2%** | **57.8%** | **25.5M** | **102.8G** |
-| [**YOLOv9-E**](https://github.com/WongKinYiu/yolov9/releases/download/v0.1/yolov9-e.pt) | 640 | **55.6%** | **72.8%** | **60.6%** | **58.1M** | **192.5G** |
-
-<!-- small and medium models will be released after the paper be accepted and published. -->
-
+The UH Racing Yolov9 Custom project aims to provide an efficient and accurate object detection solution using the Yolov9 architecture. This project is tailored for the specific needs of the UH Racing team, enabling them to detect and classify objects relevant to their domain.
 
 ## Installation
 
-Docker environment (recommended)
-<details><summary> <b>Expand</b> </summary>
+To get started with this project, follow the steps below to set up the environment and install the necessary dependencies.
 
-``` shell
-# create the docker container, you can change the share memory size if you have more.
-nvidia-docker run --name yolov9 -it -v your_coco_path/:/coco/ -v your_code_path/:/yolov9 --shm-size=64g nvcr.io/nvidia/pytorch:21.11-py3
+### Prerequisites
+- Python 3.8+
+- PyTorch with CUDA support (if using GPU)
+- NVIDIA Jetson Nano (optional, for deployment)
+- TensorRT (for optimized inference on Jetson Nano)
 
-# apt install required packages
-apt update
-apt install -y zip htop screen libgl1-mesa-glx
+### Setup Instructions
 
-# pip install required packages
-pip install seaborn thop
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/AthulKrishnaRenjith/UH-Racing-Yolov9-custom.git
+    cd UH-Racing-Yolov9-custom
+    ```
 
-# go to code folder
-cd /yolov9
-```
+2. Create and activate a virtual environment (optional but recommended):
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+    ```
 
-</details>
+3. Install the required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
+## Usage
 
-## Evaluation
+To use the pretrained Yolov9 custom model for object detection, follow the steps below:
 
-[`yolov9-c.pt`](https://github.com/WongKinYiu/yolov9/releases/download/v0.1/yolov9-c.pt) [`yolov9-e.pt`](https://github.com/WongKinYiu/yolov9/releases/download/v0.1/yolov9-e.pt) [`gelan-c.pt`](https://github.com/WongKinYiu/yolov9/releases/download/v0.1/gelan-c.pt) [`gelan-e.pt`](https://github.com/WongKinYiu/yolov9/releases/download/v0.1/gelan-e.pt)
+1. Ensure you have the necessary input data (images/videos) in the appropriate directory.
+2. Run the detection script:
+    ```bash
+    python3 detect.py --weights runs/train/<experiment>/weights/best.pt --conf 0.1 --source <path_to_input_data> --device 0
+    ```
+3. The results will be saved in the `runs/detect` directory.
 
-``` shell
-# evaluate yolov9 models
-python val_dual.py --data data/coco.yaml --img 640 --batch 32 --conf 0.001 --iou 0.7 --device 0 --weights './yolov9-c.pt' --save-json --name yolov9_c_640_val
+## Dataset
 
-# evaluate gelan models
-# python val.py --data data/coco.yaml --img 640 --batch 32 --conf 0.001 --iou 0.7 --device 0 --weights './gelan-c.pt' --save-json --name gelan_c_640_val
-```
+The dataset used for training the Yolov9 custom model comprises images and annotations specific to the Racing domain.
 
-You will get the results:
+### Dataset Details
+- Sources: Formula Student dataset (Roboflow)
+- Annotation format: YOLOv9 format (txt)
+- Preprocessing: Auto-orientation of pixel data (with EXIF-orientation stripping), Resize to 1920x1080 (Stretch)
 
-```
- Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.530
- Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.702
- Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.578
- Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.362
- Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.585
- Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.693
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.392
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.652
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.702
- Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.541
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.760
- Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.844
-```
+Acknowledgement: The dataset used in this project is derived from the Formula Student dataset, which has been invaluable in training my object detection models.
 
+![Dataset](/runs/train/exp1/labels.jpg)
 
 ## Training
 
-Data preparation
+To train the Yolov9 custom model, follow the steps below:
 
-``` shell
-bash scripts/get_coco.sh
-```
+1. Prepare the dataset and update the configuration files as needed.
+2. Run the training script:
+    ```bash
+	python3 -u train.py \
+    	--batch <batch_size> --epochs <num_epochs> --img <image_size> --device <device_id> \
+    	--min-items <min_items> --close-mosaic <close_mosaic_epoch> \
+    	--data <data_config> \
+    	--weights <pretrained_weights> \
+    	--cfg <model_config> \
+    	--hyp <hyperparameter_config>
+    ```
+3. Monitor the training process and evaluate the model's performance.
 
-* Download MS COCO dataset images ([train](http://images.cocodataset.org/zips/train2017.zip), [val](http://images.cocodataset.org/zips/val2017.zip), [test](http://images.cocodataset.org/zips/test2017.zip)) and [labels](https://github.com/WongKinYiu/yolov7/releases/download/v0.1/coco2017labels-segments.zip). If you have previously used a different version of YOLO, we strongly recommend that you delete `train2017.cache` and `val2017.cache` files, and redownload [labels](https://github.com/WongKinYiu/yolov7/releases/download/v0.1/coco2017labels-segments.zip) 
+### Recommended Hyperparameters
+- Batch size: 25 (adjust based on GPU memory)
+- Learning rate: 0.01 (with warmup)
+- Epochs: 80 (Adjust based on loss)
+- Mixed precision training (FP16) supported
 
-Single GPU training
+## Evaluation
 
-``` shell
-# train yolov9 models
-python train_dual.py --workers 8 --device 0 --batch 16 --data data/coco.yaml --img 640 --cfg models/detect/yolov9-c.yaml --weights '' --name yolov9-c --hyp hyp.scratch-high.yaml --min-items 0 --epochs 500 --close-mosaic 15
+To evaluate the trained Yolov9 custom model, use the evaluation script:
+   ```bash
+	   python3 val.py \
+	   --task <task_type> \
+	   --data <data_config> \
+	   --batch <batch_size> \
+	   --weights <model_weights>
+   ```
+The evaluation metrics will be displayed, and the results will be saved for further analysis.
 
-# train gelan models
-# python train.py --workers 8 --device 0 --batch 32 --data data/coco.yaml --img 640 --cfg models/detect/gelan-c.yaml --weights '' --name gelan-c --hyp hyp.scratch-high.yaml --min-items 0 --epochs 500 --close-mosaic 15
-```
+## Deployment on Jetson Nano
 
-Multiple GPU training
+To deploy the trained model on Jetson Nano with TensorRT optimization:
 
-``` shell
-# train yolov9 models
-python -m torch.distributed.launch --nproc_per_node 8 --master_port 9527 train_dual.py --workers 8 --device 0,1,2,3,4,5,6,7 --sync-bn --batch 128 --data data/coco.yaml --img 640 --cfg models/detect/yolov9-c.yaml --weights '' --name yolov9-c --hyp hyp.scratch-high.yaml --min-items 0 --epochs 500 --close-mosaic 15
+Convert the trained model to TensorRT format:
+   ```bash
+	   python3 export.py --weights runs/train/<experiment>/weights/best.pt --include engine --device 0 --half --simplify
+   ```
+## Performance & Benchmarks
 
-# train gelan models
-# python -m torch.distributed.launch --nproc_per_node 4 --master_port 9527 train.py --workers 8 --device 0,1,2,3 --sync-bn --batch 128 --data data/coco.yaml --img 640 --cfg models/detect/gelan-c.yaml --weights '' --name gelan-c --hyp hyp.scratch-high.yaml --min-items 0 --epochs 500 --close-mosaic 15
-```
+| Model | Hardware | mAP (%) | FPS |
+|--------|------------|---------|-----|
+| YOLOv9 (PyTorch)  | NVIDIA A100        | 85.4 | 75 |
+| YOLOv9 (ONNX)     | Jetson Nano (FP16) | 76.2 | (Untested) |
+| YOLOv9 (TensorRT) | Jetson Nano (FP16) | 74.8 | 20 |
 
+## Model Metrics
 
-## Re-parameterization
+After training for 80 epochs, the model achieved the following performance:
 
-Under construction.
-
-
-## Citation
-
-```
-@article{wang2024yolov9,
-  title={{YOLOv9}: Learning What You Want to Learn Using Programmable Gradient Information},
-  author={Wang, Chien-Yao  and Liao, Hong-Yuan Mark},
-  booktitle={arXiv preprint arXiv:2402.13616},
-  year={2024}
-}
-```
-
-```
-@article{chang2023yolor,
-  title={{YOLOR}-Based Multi-Task Learning},
-  author={Chang, Hung-Shuo and Wang, Chien-Yao and Wang, Richard Robert and Chou, Gene and Liao, Hong-Yuan Mark},
-  journal={arXiv preprint arXiv:2309.16921},
-  year={2023}
-}
-```
-
-
-## Teaser
-
-Parts of code of [YOLOR-Based Multi-Task Learning](https://arxiv.org/abs/2309.16921) are released in the repository.
+![Metrics](/runs/train/exp1/results.png)
 
 
-## Acknowledgements
 
-<details><summary> <b>Expand</b> </summary>
-
-* [https://github.com/AlexeyAB/darknet](https://github.com/AlexeyAB/darknet)
-* [https://github.com/WongKinYiu/yolor](https://github.com/WongKinYiu/yolor)
-* [https://github.com/WongKinYiu/yolov7](https://github.com/WongKinYiu/yolov7)
-* [https://github.com/VDIGPKU/DynamicDet](https://github.com/VDIGPKU/DynamicDet)
-* [https://github.com/DingXiaoH/RepVGG](https://github.com/DingXiaoH/RepVGG)
-* [https://github.com/ultralytics/yolov5](https://github.com/ultralytics/yolov5)
-* [https://github.com/meituan/YOLOv6](https://github.com/meituan/YOLOv6)
-
-</details>
