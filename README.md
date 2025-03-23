@@ -13,6 +13,7 @@ This repository contains the custom implementation of the Yolov9 model for the U
 - [Deployment on Jetson AGX Orin](#deployment-on-jetson-agx-orin)
 - [Performance & Benchmarks](#performance--benchmarks)
 - [Model Metrics](#model-metrics)
+- [ROS Integration](#ros-integration)
 
 ## Introduction
 
@@ -27,6 +28,7 @@ To get started with this project, follow the steps below to set up the environme
 - PyTorch with CUDA support (if using GPU)
 - NVIDIA Jetson AGX Orin (optional, for deployment)
 - TensorRT (for optimized inference on Jetson AGX Orin)
+- ROS2 (for ROS-based integration)
 
 ### Setup Instructions
 
@@ -135,4 +137,13 @@ After training for 80 epochs, the model achieved the following performance:
 
 ![Metrics](/runs/train/exp1/results.png)
 
+## ROS Integration
+
+ROS wrapping has been added to this repository, but it is meant to work with the UH-Racing repository. If you already have ROS2 set up to work with it, you can initialize the nodes by running:
+
+```bash
+python3 ros.py
+```
+
+This will start the necessary ROS2 nodes for integration with the UH-Racing system.
 
