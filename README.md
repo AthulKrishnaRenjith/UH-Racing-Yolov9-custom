@@ -128,8 +128,8 @@ Convert the trained model to TensorRT format:
 | Model | Hardware | mAP (%) | FPS |
 |--------|------------|---------|-----|
 | YOLOv9 (PyTorch)  | NVIDIA A100        | 85.4 | 75 |
-| YOLOv9 (ONNX)     | Jetson AGX Orin (FP16) | 76.2 | (Untested) |
-| YOLOv9 (TensorRT) | Jetson AGX Orin (FP16) | 74.8 | 20 |
+| YOLOv9 (ONNX)     | Jetson AGX Orin (INT8) | 76.2 | (Untested) |
+| YOLOv9 (TensorRT) | Jetson AGX Orin (INT8) | 74.8 | 177 |
 
 ## Model Metrics
 
