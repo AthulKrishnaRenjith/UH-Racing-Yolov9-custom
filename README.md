@@ -142,7 +142,7 @@ After training for 80 epochs, the model achieved the following performance:
 ROS wrapping has been added to this repository, but it is meant to work with the UH-Racing repository. If you already have ROS2 set up to work with it, you can initialize the nodes by running:
 
 ```bash
-python3 ros.py
+python3 ros_basic.py
 ```
 
 This will start the necessary ROS2 nodes for integration with the UH-Racing system.

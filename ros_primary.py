@@ -1,147 +1,224 @@
+#!/usr/bin/python3
 import rclpy
 from rclpy.node import Node
+from sensor_msgs.msg import Image, CameraInfo
+from std_msgs.msg import Float32MultiArray, MultiArrayDimension
+from cv_bridge import CvBridge
 import cv2
 import numpy as np
 import torch
-import onnxruntime as ort
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
-from message_filters import ApproximateTimeSynchronizer, Subscriber
+from pathlib import Path
 
-class YOLOv9ROS2(Node):
+# YOLO imports
+from models.common import DetectMultiBackend
+from utils.general import (check_img_size, non_max_suppression, scale_boxes)
+from utils.torch_utils import select_device
+from utils.augmentations import letterbox
+
+class RacingConeDetectionNode(Node):
     def __init__(self):
-        super().__init__('yolov9_ros2')
-
-        # Declare and get parameters
-        self.declare_parameter('onnx_model_path', 'runs/train/exp1/weights/best.onnx')
-        self.onnx_path = self.get_parameter('onnx_model_path').get_parameter_value().string_value
-
-        # Load ONNX model
-        self.load_model()
-
-        # ROS2 Subscribers (ZED2i RGB and Depth Images)
+        super().__init__('racing_cone_detection_node')
         self.bridge = CvBridge()
-        self.image_sub = Subscriber(self, Image, '/zed2i/zed_node/rgb/image_rect_color')
-        self.depth_sub = Subscriber(self, Image, '/zed2i/zed_node/depth/depth_registered')
+        
+        # Initialize model attributes
+        self.pt = None
+        self.stride = None
+        self.model = None
+        
+        # Cone definitions
+        self.cone_classes = {
+            0: 'large_orange_cone',
+            1: 'orange_cone', 
+            2: 'blue_cone',
+            3: 'yellow_cone'
+        }
+        
+        self.cone_colors = {
+            0: (0, 140, 255),
+            1: (0, 165, 255),
+            2: (255, 0, 0),
+            3: (0, 255, 255)
+        }
 
-        # Synchronize messages
-        self.sync = ApproximateTimeSynchronizer([self.image_sub, self.depth_sub], queue_size=10, slop=0.1)
-        self.sync.registerCallback(self.image_callback)
-
-        self.get_logger().info("YOLOv9 ROS2 node initialized.")
+        # Fixed parameters matching training
+        self.model_path = 'runs/train/exp1/weights/best.pt'
+        self.imgsz = (640, 640)
+        
+        # Declare parameters with correct types
+        self.declare_parameter('weights', self.model_path)
+        self.declare_parameter('conf_thres', 0.25)
+        self.declare_parameter('iou_thres', 0.45)
+        self.declare_parameter('max_det', 100)
+        self.declare_parameter('device', 'cuda')
+        self.declare_parameter('half', False)
+        
+        # Get parameters correctly
+        self.weights = self.get_parameter('weights').value
+        self.conf_thres = self.get_parameter('conf_thres').value
+        self.iou_thres = self.get_parameter('iou_thres').value
+        self.max_det = self.get_parameter('max_det').value
+        self.device = self.get_parameter('device').value
+        self.half = self.get_parameter('half').value
+        
+        # Setup subscribers
+        self.image_sub = self.create_subscription(
+            Image,
+            '/zed2i/zed_node/left/image_rect_color',
+            self.image_callback,
+            10
+        )
+        self.camera_info_sub = self.create_subscription(
+            CameraInfo,
+            '/zed2i/zed_node/depth/camera_info',
+            self.camera_info_callback,
+            10
+        )
+        
+        # Setup publishers
+        self.detection_pub = self.create_publisher(Float32MultiArray, '/cone_detections', 10)
+        self.visualization_pub = self.create_publisher(Image, '/cone_detections_visualization', 10)
+        
+        # Load model
+        self.load_model()
+        self.get_logger().info("Node initialized with 640x640 processing")
 
     def load_model(self):
-        """Load ONNX model with GPU acceleration (if available)."""
+        """Proper model loading with error handling"""
         try:
-            providers = ['CUDAExecutionProvider', 'CPUExecutionProvider'] if ort.get_device() == 'GPU' else ['CPUExecutionProvider']
-            self.session = ort.InferenceSession(self.onnx_path, providers=providers)
-            self.get_logger().info(f"Loaded ONNX model: {self.onnx_path}")
+            self.device = select_device(self.device)
+            self.model = DetectMultiBackend(
+                self.weights,
+                device=self.device,
+                dnn=False,
+                data=None,
+                fp16=self.half
+            )
+            
+            # Set critical attributes
+            self.stride = self.model.stride
+            self.pt = self.model.pt
+            self.imgsz = check_img_size(self.imgsz, s=self.stride)
+            
+            # Warmup
+            self.model.warmup(imgsz=(1 if self.pt else 1, 3, *self.imgsz))
+            
+            self.get_logger().info(
+                f"Model loaded | stride={self.stride} | pt={self.pt} | "
+                f"imgsz={self.imgsz}"
+            )
+            
         except Exception as e:
-            self.get_logger().error(f"Failed to load ONNX model: {e}")
-            raise RuntimeError("ONNX model loading failed.")
+            self.get_logger().error(f"Model loading failed: {str(e)}")
+            raise
 
-    def image_callback(self, img_msg, depth_msg):
-        """Callback to process synchronized RGB and depth images."""
+    def preprocess(self, img):
+        """Consistent 640x640 preprocessing"""
+        img = letterbox(img, self.imgsz, stride=self.stride, auto=self.pt)[0]
+        img = img.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
+        img = np.ascontiguousarray(img)
+        img = torch.from_numpy(img).to(self.device)
+        img = img.float()  # Matches training
+        img /= 255.0
+        return img.unsqueeze(0)  # Add batch dim
+
+    def image_callback(self, msg):
+        """Robust image processing pipeline"""
         try:
-            # Convert ROS2 images to OpenCV
-            cv_image = self.bridge.imgmsg_to_cv2(img_msg, "bgr8")
-            depth_image = self.bridge.imgmsg_to_cv2(depth_msg, "32FC1")  # Float32 depth map
-
-            # Preprocess image for YOLOv9
-            input_tensor = self.preprocess_image(cv_image)
-
-            # Run inference
-            detections = self.run_inference(input_tensor)
-
-            # Draw bounding boxes and estimate depth
-            if detections is not None:
-                cv_image = self.draw_bounding_boxes(cv_image, depth_image, detections)
-
-            # Display image
-            cv2.imshow("YOLOv9 Detections", cv_image)
-            cv2.waitKey(1)
-
+            cv_image = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
+            img_tensor = self.preprocess(cv_image)
+            
+            with torch.no_grad():
+                pred = self.model(img_tensor)[0]
+                pred = non_max_suppression(
+                    pred,
+                    self.conf_thres,
+                    self.iou_thres,
+                    classes=None,
+                    agnostic_nms=False,
+                    max_det=self.max_det
+                )
+            
+            self.process_detections(pred, cv_image.copy())
+            
         except Exception as e:
-            self.get_logger().error(f"Error in image callback: {e}")
+            self.get_logger().error(f"Image processing failed: {str(e)}", throttle_duration_sec=1)
 
-    def preprocess_image(self, image):
-        """Preprocess image for YOLOv9 ONNX model."""
-        img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        img = cv2.resize(img, (640, 640))  # Resize to YOLOv9 input size
-        img = img.astype(np.float32) / 255.0  # Normalize
-        img = np.expand_dims(np.transpose(img, (2, 0, 1)), axis=0)  # (1,3,640,640)
-        return img
-
-    def run_inference(self, input_tensor):
-        """Run YOLOv9 inference using ONNX model."""
-        try:
-            input_tensor = torch.tensor(input_tensor, dtype=torch.float32)
-            ort_inputs = {self.session.get_inputs()[0].name: input_tensor.numpy()}
-            output = self.session.run(None, ort_inputs)[0]
-            return self.non_max_suppression(output)
-        except Exception as e:
-            self.get_logger().error(f"Inference error: {e}")
-            return None
-
-    def non_max_suppression(self, predictions, conf_threshold=0.25, iou_threshold=0.45):
-        """Apply Non-Maximum Suppression (NMS) to filter detections."""
-        predictions = torch.tensor(predictions) if not isinstance(predictions, torch.Tensor) else predictions
-        valid_detections = []
-
-        for pred in predictions:
-            conf_mask = pred[:, 4] > conf_threshold  # Confidence threshold
-            pred = pred[conf_mask]
-
-            if not len(pred):
-                continue
-
-            # Apply NMS
-            keep = torch.ops.torchvision.nms(pred[:, :4], pred[:, 4], iou_threshold)
-            valid_detections.append(pred[keep].tolist())
-
-        return valid_detections if valid_detections else None
-
-    def draw_bounding_boxes(self, image, depth_image, detections):
-        """Draw bounding boxes and estimate object distances."""
-        if not detections:
-            return image  # No detections
-
-        for det in detections:
-            for d in det:
-                if len(d) != 6:
-                    self.get_logger().warn(f"Unexpected detection format: {d}")
-                    continue
-
-                x1, y1, x2, y2, conf, cls = map(int, d[:6])  # Ensure integers
-                label = f'Class {cls} | Conf {conf:.2f}'
-
-                # Estimate distance using depth image
-                depth_value = depth_image[y1 + (y2 - y1) // 2, x1 + (x2 - x1) // 2]
-                depth_text = f'Depth: {depth_value:.2f}m' if depth_value > 0 else "No depth"
-
-                # Draw bounding box and labels
-                cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                cv2.putText(image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                cv2.putText(image, depth_text, (x1, y2 + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-
-        return image
+    def process_detections(self, pred, img):
+        """Convert detections to ROS messages"""
+        detections = Float32MultiArray()
+        dim = MultiArrayDimension()
+        dim.label = "detections"
+        dim.stride = 6  # x1,y1,x2,y2,class,conf
+        detections.layout.dim.append(dim)
+        
+        annotated = img.copy()
+        data = []
+        
+        for det in pred:
+            if len(det):
+                det[:, :4] = scale_boxes(self.imgsz, det[:, :4], img.shape).round()
+                
+                for *xyxy, conf, cls in reversed(det):
+                    cls = int(cls)
+                    if cls not in self.cone_classes:
+                        continue
+                        
+                    data.extend([
+                        float(xyxy[0]), float(xyxy[1]),
+                        float(xyxy[2]), float(xyxy[3]),
+                        float(cls), float(conf)
+                    ])
+                    
+                    # Draw detection
+                    label = f"{self.cone_classes[cls]} {conf:.2f}"
+                    color = self.cone_colors[cls]
+                    
+                    cv2.rectangle(
+                        annotated,
+                        (int(xyxy[0]), int(xyxy[1])),
+                        (int(xyxy[2]), int(xyxy[3])),
+                        color, 2
+                    )
+                    
+                    (w, h), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 1)
+                    cv2.rectangle(
+                        annotated,
+                        (int(xyxy[0]), int(xyxy[1]) - h - 4),
+                        (int(xyxy[0]) + w, int(xyxy[1])),
+                        color, -1
+                    )
+                    
+                    cv2.putText(
+                        annotated, label,
+                        (int(xyxy[0]), int(xyxy[1]) - 4),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (255, 255, 255), 1, cv2.LINE_AA
+                    )
+        
+        detections.layout.dim[0].size = len(data) // 6
+        detections.data = data
+        
+        self.detection_pub.publish(detections)
+        self.visualization_pub.publish(
+            self.bridge.cv2_to_imgmsg(annotated, 'bgr8')
+        )
+        
+        if data:
+            self.get_logger().info(
+                f"Detected {len(data)//6} cones",
+                throttle_duration_sec=1
+            )
 
 def main(args=None):
-    """Initialize and run the ROS 2 node."""
     rclpy.init(args=args)
-    node = YOLOv9ROS2()
-
+    node = RacingConeDetectionNode()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        pass
+        node.get_logger().info("Shutting down...")
     finally:
         node.destroy_node()
-        cv2.destroyAllWindows()  # Cleanup OpenCV windows
         rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
-
-
-
