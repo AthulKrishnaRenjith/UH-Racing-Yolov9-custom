@@ -115,10 +115,17 @@ python3 ros_basic.py
 
 ## Model Weights & Demo
 **Coming Soon**
-
 [Demo]
 
 [Model weights](https://drive.google.com/drive/folders/1hZeVeqaS2fqMarTNMfKQmzFWpvjT1Hwu?usp=sharing)
+
+## Research Paper & Project Report
+
+Research Paper: Accepted at the 2025 International Conference on Computer Vision and Augmented Reality
+
+Project Report: MSc Thesis submitted to the University of Hertfordshire (2025)
+
+[Link to both documents](https://drive.google.com/drive/folders/1dWpUSEvCEqUY_QrsJdSkZfllkmNkIPZ8?usp=sharing)
 
 ## Future Work
 - DeepSORT integration for temporal tracking
