@@ -107,7 +107,7 @@ python3 ros_basic.py
 
 ROS Integration with Depth mapping:
 ```bash
-python3 ros_basic.py
+python3 ros_primary.py
 ```
 
 - Integrated with UH Racing ROS2 stack
