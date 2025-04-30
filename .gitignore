@@ -6,3 +6,4 @@ ADS_DV_CAM_without_obstacles/
 valid/
 test/
 !runs/train
+runs/detect/
