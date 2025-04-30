@@ -1,4 +1,4 @@
-# UH Racing YOLOv9 Custom – Real-Time Perception for Autonomous Racing
+# Real-Time Perception for Autonomous Racing
 
 This repository showcases a domain-optimized implementation of the YOLOv9 object detection model for the UH Racing autonomous system. Designed to meet the ultra-low-latency demands of Formula Student racing, this project integrates deep learning, edge AI, and robotics into a deployable real-time perception pipeline.
 
