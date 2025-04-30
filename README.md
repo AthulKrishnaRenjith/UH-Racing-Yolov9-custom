@@ -15,6 +15,7 @@ This repository showcases a domain-optimized implementation of the YOLOv9 object
 - [Edge Deployment on Jetson AGX Orin](#edge-deployment-on-jetson-agx-orin)
 - [ROS2 Integration](#ros2-integration)
 - [Performance Summary](#performance-summary)
+- [Model Weights & Demo](#model-weights--demo)
 - [Future Work](#future-work)
 
 ## Overview
@@ -99,17 +100,9 @@ python3 export.py \
 - Real-time validated in 10km dynamic track footage
 
 ## ROS2 Integration
-
-For a simple ROS Integration:
 ```bash
 python3 ros_basic.py
 ```
-
-ROS Integration with Depth mapping:
-```bash
-python3 ros_primary.py
-```
-
 - Integrated with UH Racing ROS2 stack
 - Real-time performance: 8.3 ms end-to-end latency
 - Compatible with ZED 2i stereo vision pipeline
@@ -119,6 +112,11 @@ python3 ros_primary.py
 - ✅ **Precision**: 91.8% (measured in rain & haze conditions)
 - ✅ **Latency**: 19.2 ms (TensorRT), 8.3 ms (ROS2 pipeline)
 - ✅ **Power**: 29.7 W under full load (±0.8 W variance)
+
+## Model Weights & Demo
+**Coming Soon**
+
+Pretrained weights and demo video will be added here.
 
 ## Future Work
 - DeepSORT integration for temporal tracking
@@ -131,7 +129,6 @@ python3 ros_primary.py
 This system forms the real-time perception module for UH Racing's autonomous vehicle and is designed to push the limits of edge AI in competitive robotics.
 
 > ✨ **Open-source, reproducible, and competition-tested.**
-
 
 ## Model Metrics
 
