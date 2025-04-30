@@ -116,7 +116,9 @@ python3 ros_basic.py
 ## Model Weights & Demo
 **Coming Soon**
 
-Pretrained weights and demo video will be added here.
+Demo:
+
+{Model weights](https://drive.google.com/drive/folders/1hZeVeqaS2fqMarTNMfKQmzFWpvjT1Hwu?usp=sharing)
 
 ## Future Work
 - DeepSORT integration for temporal tracking
