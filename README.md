@@ -2,8 +2,6 @@
 
 This repository showcases a domain-optimized implementation of the YOLOv9 object detection model for the UH Racing autonomous system. Designed to meet the ultra-low-latency demands of Formula Student racing, this project integrates deep learning, edge AI, and robotics into a deployable real-time perception pipeline.
 
-> 📢 **Research accepted at the 2025 International Conference on Computer Vision and Augmented Reality**
-
 ## Table of Contents
 - [Overview](#overview)
 - [System Architecture](#system-architecture)
@@ -121,9 +119,9 @@ python3 ros_basic.py
 
 ## Research Paper & Project Report
 
-Research Paper: Accepted at the 2025 International Conference on Computer Vision and Augmented Reality
-
 Project Report: MSc Thesis submitted to the University of Hertfordshire (2025)
+
+Research Report: The report was presented to stakeholders for review and feedback.
 
 [Link to both documents](https://drive.google.com/drive/folders/1dWpUSEvCEqUY_QrsJdSkZfllkmNkIPZ8?usp=sharing)
 
