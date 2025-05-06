@@ -119,14 +119,15 @@ python3 ros_basic.py
 [Model weights](https://drive.google.com/drive/folders/1hZeVeqaS2fqMarTNMfKQmzFWpvjT1Hwu?usp=sharing)
 
 ## Visual Results
-Model identification while car is on race track:
-![racing](Demo/racing.jpg)
+* **Dry Track Conditions:**
+  The model successfully identifies objects while the autonomous vehicle is in motion on a dry race track.
+  ![racing](Demo/racing.jpg)
 
-Model identification while car is on race track during rain:
-![raining](Demo/raining.jpg)
+* **Rainy Conditions:**
+  The model maintains robust detection capabilities even during adverse weather, such as rainfall on the race track.
+  ![rainy](Demo/rainy.jpg)
 
 ## Research Paper & Project Report
-
 Project Report: MSc Thesis submitted to the University of Hertfordshire (2025)
 
 Research Report: The report was presented to stakeholders for review and feedback.
