@@ -119,6 +119,8 @@ python3 ros_basic.py
 [Model weights](https://drive.google.com/drive/folders/1hZeVeqaS2fqMarTNMfKQmzFWpvjT1Hwu?usp=sharing)
 
 ## Visual Results
+
+### Model Detection in Different Track Conditions
 * **Dry Track Conditions:**
   The model successfully identifies objects while the autonomous vehicle is in motion on a dry race track.
   ![racing](Demo/racing.jpg)
