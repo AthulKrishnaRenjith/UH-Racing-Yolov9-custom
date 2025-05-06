@@ -120,10 +120,10 @@ python3 ros_basic.py
 
 ## Visual Results
 Model identification while car is on race track:
-![racing](Demo/racing.png)
+![racing](Demo/racing.jpg)
 
 Model identification while car is on race track during rain:
-![raining](Demo/raining.png)
+![raining](Demo/raining.jpg)
 
 ## Research Paper & Project Report
 
