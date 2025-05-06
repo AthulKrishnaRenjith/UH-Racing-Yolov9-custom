@@ -106,6 +106,13 @@ python3 ros_basic.py
 - Integrated with UH Racing ROS2 stack
 - Real-time performance: 8.3 ms end-to-end latency
 - Compatible with ZED 2i stereo vision pipeline
+- Implements basic message passing functionality.
+
+```bash
+python3 ros_primary.py
+```
+- Implemented detection visualization for real-time feedback
+- Integrated depth visualization and depth mapping functionalities to enhance spatial understanding
 
 ## Performance Summary
 - ✅ **Inference speed**: 52 FPS @ 640x640
