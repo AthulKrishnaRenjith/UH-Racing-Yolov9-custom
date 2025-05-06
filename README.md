@@ -14,6 +14,8 @@ This repository showcases a domain-optimized implementation of the YOLOv9 object
 - [ROS2 Integration](#ros2-integration)
 - [Performance Summary](#performance-summary)
 - [Model Weights & Demo](#model-weights--demo)
+- [Visual Results](#visual-results)
+- [Research Paper & Project Report](#research-paper--project-report)
 - [Future Work](#future-work)
 
 ## Overview
@@ -112,9 +114,16 @@ python3 ros_basic.py
 - ✅ **Power**: 29.7 W under full load (±0.8 W variance)
 
 ## Model Weights & Demo
-[Demo](Demo/sample_video.mp4)
+[Demo](Demo/demo.mp4)
 
 [Model weights](https://drive.google.com/drive/folders/1hZeVeqaS2fqMarTNMfKQmzFWpvjT1Hwu?usp=sharing)
+
+## Visual Results
+Model identification while car is on race track:
+![racing](Demo/racing.png)
+
+Model identification while car is on race track during rain:
+![raining](Demo/raining.png)
 
 ## Research Paper & Project Report
 
