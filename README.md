@@ -123,7 +123,7 @@ python3 ros_primary.py
 ## Model Weights & Demo
 ![Demo](Demo/demo.gif)
 
-[Model weights](https://drive.google.com/drive/folders/1hZeVeqaS2fqMarTNMfKQmzFWpvjT1Hwu?usp=sharing)
+- [Model weights](https://drive.google.com/drive/folders/1hZeVeqaS2fqMarTNMfKQmzFWpvjT1Hwu?usp=sharing)
 
 ## Visual Results
 
