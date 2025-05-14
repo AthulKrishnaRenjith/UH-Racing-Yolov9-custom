@@ -7,3 +7,4 @@ valid/
 test/
 !runs/train
 runs/detect/
+commands.txt
