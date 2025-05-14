@@ -121,6 +121,10 @@ python3 ros_primary.py
 - ✅ **Power**: 29.7 W under full load (±0.8 W variance)
 
 ## Model Weights & Demo
+
+- Demo(2 tracks): [Demo](https://drive.google.com/drive/folders/12wl5s01Gn2bpwN2kOC6y5D8TQQUg5dv9?usp=sharing)
+
+- Short demo
 ![Demo](Demo/demo.gif)
 
 - [Model weights](https://drive.google.com/drive/folders/1hZeVeqaS2fqMarTNMfKQmzFWpvjT1Hwu?usp=sharing)
