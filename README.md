@@ -122,7 +122,7 @@ python3 ros_primary.py
 
 ## Model Weights & Demo
 
-- Demo(2 tracks): [Demo](https://drive.google.com/drive/folders/12wl5s01Gn2bpwN2kOC6y5D8TQQUg5dv9?usp=sharing)
+- [Demo](https://drive.google.com/drive/folders/12wl5s01Gn2bpwN2kOC6y5D8TQQUg5dv9?usp=sharing)(2 tracks)
 
 - Short demo
 ![Demo](Demo/demo.gif)
