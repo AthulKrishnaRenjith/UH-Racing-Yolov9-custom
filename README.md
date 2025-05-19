@@ -22,7 +22,7 @@ This repository showcases a domain-optimized implementation of the YOLOv9 object
 This project delivers a real-time cone detection system for autonomous racing vehicles using a custom-trained YOLOv9 model enhanced with the Gelan-C backbone. The model is optimized for deployment on the NVIDIA Jetson AGX Orin using TensorRT, achieving 52 FPS with 92% precision and 19.2 ms inference latency.
 
 ## System Architecture
-- **Detection Backbone**: YOLOv9 + Gelan-C
+- **Detection**: YOLOv9 (Gelan-C)
 - **Edge Optimisation**: TensorRT + FP16 quantisation + ONNX pruning
 - **Pipeline Integration**: ROS2 Galactic framework
 - **Hardware**: Jetson AGX Orin (64 GB LPDDR5, Ampere GPU)
@@ -59,6 +59,7 @@ python3 detect.py \
   - HSV jitter
   - Brightness/contrast shift
   - Gaussian noise
+  - Random occlusion
 
 Download:
 ```bash
@@ -85,7 +86,7 @@ python3 -u train.py \
 | mAP@0.5 (%)  | 80.1    | 80.0  | 79.8             |
 | Precision    | 92.0    | 91.9  | 91.8             |
 | Recall       | 67.0    | 66.8  | 66.5             |
-| Inference FPS| 15.9    | 35.0  | 52.1             |
+| Inference FPS| 22.3    | 35.0  | 52.1             |
 | Power (W)    | 42.3    | 38.1  | 29.7             |
 
 ## Edge Deployment on Jetson AGX Orin
@@ -104,7 +105,7 @@ python3 export.py \
 python3 ros_basic.py
 ```
 - Integrated with UH Racing ROS2 stack
-- Real-time performance: 8.3 ms end-to-end latency
+- Real-time performance: 27 ms end-to-end ROS pipeline latency
 - Compatible with ZED 2i stereo vision pipeline
 - Implements basic message passing functionality.
 
@@ -112,12 +113,12 @@ python3 ros_basic.py
 python3 ros_primary.py
 ```
 - Implemented detection visualization for real-time feedback
-- Integrated depth visualization and depth mapping functionalities to enhance spatial understanding
+- Integrated depth visualization and depth mapping functionalities
 
 ## Performance Summary
 - ✅ **Inference speed**: 52 FPS @ 640x640
-- ✅ **Precision**: 91.8% (measured in rain & haze conditions)
-- ✅ **Latency**: 19.2 ms (TensorRT), 8.3 ms (ROS2 pipeline)
+- ✅ **Precision**: 92% (measured in rain & haze conditions)
+- ✅ **Latency**: 19.2 ms (TensorRT), 27 ms (ROS2 pipeline)
 - ✅ **Power**: 29.7 W under full load (±0.8 W variance)
 
 ## Model Weights & Demo
@@ -157,7 +158,7 @@ Research Report: The report was presented to stakeholders for review and feedbac
 
 This system forms the real-time perception module for UH Racing's autonomous vehicle and is designed to push the limits of edge AI in competitive robotics.
 
-> ✨ **Open-source, reproducible, and competition-tested.**
+> ✨ **Open-source and Reproducible**
 
 ## Model Metrics
 
