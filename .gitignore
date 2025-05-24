@@ -5,4 +5,7 @@ ADS_DV_CAM_without_obstacles/
 /train
 valid/
 test/
+runs/detect/
 !runs/train
+rosbag2_perception_testdata/
+runs/val/

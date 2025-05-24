@@ -494,7 +494,7 @@ def run(
     # Update model
     model.eval()
     for k, m in model.named_modules():
-        if isinstance(m, (Detect, V6Detect)):
+        if isinstance(m, (Detect,)):
             m.inplace = inplace
             m.dynamic = dynamic
             m.export = True

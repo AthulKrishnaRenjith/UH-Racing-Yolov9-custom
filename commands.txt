@@ -1,0 +1,8 @@
+python3 detect.py --weights runs/train/exp1/weights/best.pt --conf 0.1 --source test/images/20191126_154021_jpg.rf.ba0a0e2c8c982775fbff4ed7b1d47426.jpg --device 0
+
+python3 detect.py --weights runs/train/exp1/weights/best.onnx --conf 0.1 --source test/images/20191126_154021_jpg.rf.ba0a0e2c8c982775fbff4ed7b1d47426.jpg --device 0 --half
+
+ python3 val.py --task speed --data data.yaml --batch 25 --weights best_fp16.engine
+ 
+ python3 val.py --task speed --data data.yaml --batch 25 --weights runs/train/exp1/weights/best.pt
+
