@@ -8,3 +8,5 @@ test/
 !runs/train
 runs/detect/
 commands.txt
+runs/val/
+rosbag2_perception_testdata/
