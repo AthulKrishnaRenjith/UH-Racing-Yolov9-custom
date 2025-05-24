@@ -9,3 +9,4 @@ runs/detect/
 !runs/train
 rosbag2_perception_testdata/
 runs/val/
+test.jpg
